@@ -24,17 +24,20 @@ function throwErrorAndExit(error: string): void {
   // Read config
   const configFile: Buffer = await fs.readFileSync(configPath);
   const configData = JSON.parse(configFile.toString());
-
+  const tokens = ["usdc","weth","link","gno","wxdai","wbtc"];
   // Check if config contains airdrop key
-  if (configData["airdrop"] === undefined) {
-    throwErrorAndExit("Missing airdrop param in config. Please add.");
-  }
-
-  // Collect config
+  for (let i in tokens){
+    if (configData[tokens[i]] === undefined) {
+        throwErrorAndExit(`Missing ${tokens[i]} param in config. Please add.`);
+      }
+      // Collect config
   const decimals: number = configData.decimals ?? 18;
-  const airdrop: Record<string, number> = configData.airdrop;
+
+  const airdrop: Record<string, number> = configData[tokens[i]];
 
   // Initialize and call generator
   const generator = new Generator(decimals, airdrop);
-  await generator.process();
+  await generator.process(tokens[i],);
+  }
+
 })();

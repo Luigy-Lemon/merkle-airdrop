@@ -61,9 +61,9 @@ function useToken() {
       process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? "",
       [
         // hasClaimed mapping
-        "function hasClaimed(address) public view returns (bool)",
+        "function hasClaimed(address token, address user) public view returns (bool)",
         // Claim function
-        "function claim(address to, uint256 amount, bytes32[] calldata proof) external",
+        "function claim(address token, address to, uint256 amount, bytes32[] calldata proof) external",
       ],
       // Get signer from authed provider
       provider?.getSigner()
@@ -78,7 +78,6 @@ function useToken() {
   const getAirdropAmount = (address: string): number => {
     // If address is in airdrop. convert address to correct checksum
     address = ethers.utils.getAddress(address)
-    
     if (address in config.airdrop) {
       // Return number of tokens available
       return config.airdrop[address];
@@ -97,7 +96,7 @@ function useToken() {
     // Collect token contract
     const token: ethers.Contract = getContract();
     // Return claimed status
-    return await token.hasClaimed(address);
+    return await token.hasClaimed("0xEB8C68bD221254E7Cc1bb1B0B037336449C268FB", address);
   };
 
   const claimAirdrop = async (): Promise<void> => {
@@ -122,7 +121,7 @@ function useToken() {
 
     // Try to claim airdrop and refresh sync status
     try {
-      const tx = await token.claim(formattedAddress, numTokens, proof);
+      const tx = await token.claim("0xEB8C68bD221254E7Cc1bb1B0B037336449C268FB", formattedAddress, numTokens, proof);
       await tx.wait(1);
       await syncStatus();
     } catch (e) {
@@ -141,8 +140,9 @@ function useToken() {
     if (address) {
       // Collect number of tokens for address
       const tokens = getAirdropAmount(address);
-      setNumTokens(tokens);
 
+      setNumTokens(tokens);
+      
       // Collect claimed status for address, if part of airdrop (tokens > 0)
       if (tokens > 0) {
         const claimed = await getClaimedStatus(address);

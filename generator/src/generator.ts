@@ -25,7 +25,7 @@ export default class Generator {
    * @param {number} decimals of token
    * @param {Record<string, number>} airdrop address to token claim mapping
    */
-  constructor(decimals: number, airdrop: Record<string, number>) {
+  constructor( decimals: number, airdrop: Record<string, number>) {
     // For each airdrop entry
     for (const [address, tokens] of Object.entries(airdrop)) {
       // Push:
@@ -52,8 +52,9 @@ export default class Generator {
     );
   }
 
-  async process(): Promise<void> {
-    logger.info("Generating Merkle tree.");
+  async process(symbol:string ): Promise<void> {
+    
+    logger.info(`Generating Merkle tree for ${symbol}`);
 
     // Generate merkle tree
     const merkleTree = new MerkleTree(

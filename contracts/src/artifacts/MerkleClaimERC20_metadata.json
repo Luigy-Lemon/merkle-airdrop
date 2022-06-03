@@ -1,0 +1,264 @@
+{
+	"compiler": {
+		"version": "0.8.13+commit.abaa5c0e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "_tokenAddresses",
+						"type": "address[]"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "_merkleRoots",
+						"type": "bytes32[]"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "AlreadyClaimed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotInMerkle",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "Claim",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "DAO",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "proof",
+						"type": "bytes32[]"
+					}
+				],
+				"name": "claim",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "hasClaimed",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "merkleRoots",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract IERC20",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "protocolFallback",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Anish Agnihotri <contact@anishagnihotri.com>Luigy Lemon -> modified for multi-token airdrops.",
+			"events": {
+				"Claim(address,uint256)": {
+					"params": {
+						"amount": "of tokens claimed",
+						"to": "recipient of claim"
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"claim(address,address,uint256,bytes32[])": {
+					"params": {
+						"amount": "of tokens owed to claimee",
+						"proof": "merkle proof to prove address and amount are in tree",
+						"to": "address of claimee"
+					}
+				},
+				"constructor": {
+					"params": {
+						"_merkleRoots": "of claimees",
+						"_tokenAddresses": "of claimable tokens"
+					}
+				}
+			},
+			"title": "MerkleClaimERC20",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"AlreadyClaimed()": [
+					{
+						"notice": "Thrown if address has already claimed"
+					}
+				],
+				"NotInMerkle()": [
+					{
+						"notice": "Thrown if address/amount are not part of Merkle tree"
+					}
+				]
+			},
+			"events": {
+				"Claim(address,uint256)": {
+					"notice": "Emitted after a successful token claim"
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"claim(address,address,uint256,bytes32[])": {
+					"notice": "Allows claiming tokens if address is part of merkle tree"
+				},
+				"constructor": {
+					"notice": "Creates a new MerkleClaimERC20 contract for already existing ERC20"
+				},
+				"hasClaimed(address,address)": {
+					"notice": "Mapping of addresses who have claimed tokens"
+				},
+				"merkleRoots(address)": {
+					"notice": "ERC20-claimee inclusion root"
+				}
+			},
+			"notice": "ERC20 claimable by members of a merkle tree",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/src/MerkleClaimERC20.sol": "MerkleClaimERC20"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+				"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+			]
+		},
+		"@openzeppelin/contracts/utils/cryptography/MerkleProof.sol": {
+			"keccak256": "0xaaa504ac17eb0298dcdf5733ce24021b4914f035b97f4400b92827341d3facb3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1aa68fa19422863cc91d23b5896917dbe79175ed47b591148aaeb3e98cb49752",
+				"dweb:/ipfs/QmeY64vTRbGhdXcytRKusfJsAfNF4aqr9e1SGBGdCYvW2j"
+			]
+		},
+		"contracts/src/MerkleClaimERC20.sol": {
+			"keccak256": "0x4547a8983a59ec3bcb5b13bd4e5ecb30fd9542ad9cbad838eaec423b23b79dad",
+			"license": "AGPL-3.0-only",
+			"urls": [
+				"bzz-raw://c34922f6b565656caffc62b9b38288b4254ac8dc49014396bb28ec03515673e5",
+				"dweb:/ipfs/QmZG3Hyh2dgjCPLN7JbSHkdSCagVw7MrHaEFRCRTRTN4gv"
+			]
+		}
+	},
+	"version": 1
+}

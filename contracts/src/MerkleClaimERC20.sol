@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity >=0.8.0;
+pragma solidity 0.8.13;
 
 /// ============ Imports ============
 
-import { ERC20 } from "@solmate/tokens/ERC20.sol"; // Solmate: ERC20
-import { MerkleProof } from "@openzeppelin/utils/cryptography/MerkleProof.sol"; // OZ: MerkleProof
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol"; // Solmate: ERC20
+import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol"; // OZ: MerkleProof
 
 /// @title MerkleClaimERC20
 /// @notice ERC20 claimable by members of a merkle tree
 /// @author Anish Agnihotri <contact@anishagnihotri.com>
-/// @dev Solmate ERC20 includes unused _burn logic that can be removed to optimize deployment cost
-contract MerkleClaimERC20 is ERC20 {
+/// @author Luigy Lemon -> modified for multi-token airdrops.
+contract MerkleClaimERC20 {
 
   /// ============ Immutable storage ============
 
   /// @notice ERC20-claimee inclusion root
-  bytes32 public immutable merkleRoot;
-
+  mapping(address => bytes32) public merkleRoots;
+  address public immutable DAO = 0xb4c575308221CAA398e0DD2cDEB6B2f10d7b000A;
   /// ============ Mutable storage ============
 
   /// @notice Mapping of addresses who have claimed tokens
-  mapping(address => bool) public hasClaimed;
+  mapping(address => mapping(address => bool)) public hasClaimed;
 
   /// ============ Errors ============
 
@@ -31,18 +31,18 @@ contract MerkleClaimERC20 is ERC20 {
 
   /// ============ Constructor ============
 
-  /// @notice Creates a new MerkleClaimERC20 contract
-  /// @param _name of token
-  /// @param _symbol of token
-  /// @param _decimals of token
-  /// @param _merkleRoot of claimees
+  /// @notice Creates a new MerkleClaimERC20 contract for already existing ERC20
+  /// @param _tokenAddresses of claimable tokens
+  /// @param _merkleRoots of claimees
   constructor(
-    string memory _name,
-    string memory _symbol,
-    uint8 _decimals,
-    bytes32 _merkleRoot
-  ) ERC20(_name, _symbol, _decimals) {
-    merkleRoot = _merkleRoot; // Update root
+    address[]  memory _tokenAddresses,
+    bytes32[] memory _merkleRoots
+  ) {
+    require(_tokenAddresses.length == _merkleRoots.length , "Need as many merkle Roots as tokens");
+    for (uint8 i =0; i< _tokenAddresses.length; i++){
+        merkleRoots[_tokenAddresses[i]] = _merkleRoots[i]; // Update root 
+    }
+    
   }
 
   /// ============ Events ============
@@ -58,22 +58,28 @@ contract MerkleClaimERC20 is ERC20 {
   /// @param to address of claimee
   /// @param amount of tokens owed to claimee
   /// @param proof merkle proof to prove address and amount are in tree
-  function claim(address to, uint256 amount, bytes32[] calldata proof) external {
+  function claim(address token, address to, uint256 amount, bytes32[] calldata proof) external {
     // Throw if address has already claimed tokens
-    if (hasClaimed[to]) revert AlreadyClaimed();
+    if (hasClaimed[token][to]) revert AlreadyClaimed();
 
     // Verify merkle proof, or revert if not in tree
     bytes32 leaf = keccak256(abi.encodePacked(to, amount));
-    bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
+    bool isValidLeaf = MerkleProof.verify(proof, merkleRoots[token], leaf);
     if (!isValidLeaf) revert NotInMerkle();
 
     // Set address to claimed
-    hasClaimed[to] = true;
+    hasClaimed[token][to] = true;
 
-    // Mint tokens to address
-    _mint(to, amount);
+    // Send tokens to address
+    IERC20(token).transfer(to, amount);
 
     // Emit claim event
     emit Claim(to, amount);
+  }
+
+  function protocolFallback(IERC20 token, uint256 amount) external {
+    require(msg.sender == DAO);
+    // Send tokens back to DAO
+    token.transfer(DAO, amount);
   }
 }
