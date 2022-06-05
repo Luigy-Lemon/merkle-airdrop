@@ -5,6 +5,8 @@ import keccak256 from "keccak256"; // Keccak256 hashing
 import MerkleTree from "merkletreejs"; // MerkleTree.js
 import { useEffect, useState } from "react"; // React
 import { createContainer } from "unstated-next"; // State management
+import { useRouter } from 'next/router';
+
 
 /**
  * Generate Merkle Tree leaf from address and value
@@ -23,18 +25,20 @@ function generateLeaf(address: string, value: string): Buffer {
 }
 
 // Setup merkle tree
-const merkleTree = new MerkleTree(
+function merkleTree(index:number){
+  const tree = new MerkleTree(
   // Generate leafs
-  Object.entries(config.airdrop).map(([address, tokens]) =>
+  Object.entries(config[index].addresses).map(([address, tokens]) =>
     generateLeaf(
       ethers.utils.getAddress(address),
-      ethers.utils.parseUnits(tokens.toString(), config.decimals).toString()
+      ethers.utils.parseUnits(tokens.toString(), config[index].decimals).toString()
     )
   ),
   // Hashing function
   keccak256,
   { sortPairs: true }
-);
+)
+return tree};
 
 function useToken() {
   // Collect global ETH state
@@ -46,10 +50,14 @@ function useToken() {
     provider: ethers.providers.Web3Provider | null;
   } = eth.useContainer();
 
+  const router = useRouter()
+  // Global ETH state
+
   // Local state
   const [dataLoading, setDataLoading] = useState<boolean>(true); // Data retrieval status
   const [numTokens, setNumTokens] = useState<number>(0); // Number of claimable tokens
   const [alreadyClaimed, setAlreadyClaimed] = useState<boolean>(false); // Claim status
+  const [index, setIndex] = useState<number>(0); // index
 
   /**
    * Get contract
@@ -73,16 +81,20 @@ function useToken() {
   /**
    * Collects number of tokens claimable by a user from Merkle tree
    * @param {string} address to check
-   * @returns {number} of tokens claimable
+   * @returns {string} of tokens claimable
    */
-  const getAirdropAmount = (address: string): number => {
+  const getAirdropAmount = (address: string,index:number ): number => {
     // If address is in airdrop. convert address to correct checksum
     address = ethers.utils.getAddress(address)
-    if (address in config.airdrop) {
+    if (address in config[index].addresses) {
       // Return number of tokens available
-      return config.airdrop[address];
+      return config[index].addresses[address];
     }
-
+    address = address.toLowerCase()
+    if (address in config[index].addresses) {
+      // Return number of tokens available
+      return config[index].addresses[address];
+    }
     // Else, return 0 tokens
     return 0;
   };
@@ -96,11 +108,14 @@ function useToken() {
     // Collect token contract
     const token: ethers.Contract = getContract();
     // Return claimed status
-    return await token.hasClaimed("0xEB8C68bD221254E7Cc1bb1B0B037336449C268FB", address);
+    let assetToClaim:string = config[index].token
+    return await token.hasClaimed(assetToClaim, address);
   };
 
-  const claimAirdrop = async (): Promise<void> => {
+  const claimAirdrop = async (claimId:number): Promise<void> => {
     // If not authenticated throw
+    setIndex(claimId)
+    let assetToClaim:string = config[index].token
     if (!address) {
       throw new Error("Not Authenticated");
     }
@@ -111,17 +126,18 @@ function useToken() {
     const formattedAddress: string = ethers.utils.getAddress(address);
     // Get tokens for address
     const numTokens: string = ethers.utils
-      .parseUnits(config.airdrop[ethers.utils.getAddress(address)].toString(), config.decimals)
+      .parseUnits(config[index].addresses[ethers.utils.getAddress(address)].toString(), config[index].decimals)
       .toString();
 
     // Generate hashed leaf from address
     const leaf: Buffer = generateLeaf(formattedAddress, numTokens);
     // Generate airdrop proof
-    const proof: string[] = merkleTree.getHexProof(leaf);
+    const proof: string[] = merkleTree(index).getHexProof(leaf);
 
     // Try to claim airdrop and refresh sync status
     try {
-      const tx = await token.claim("0xEB8C68bD221254E7Cc1bb1B0B037336449C268FB", formattedAddress, numTokens, proof);
+      console.log(assetToClaim, formattedAddress, numTokens, proof)
+      const tx = await token.claim(assetToClaim, formattedAddress, numTokens, proof);
       await tx.wait(1);
       await syncStatus();
     } catch (e) {
@@ -135,17 +151,22 @@ function useToken() {
   const syncStatus = async (): Promise<void> => {
     // Toggle loading
     setDataLoading(true);
-
+    let claimId = Number(router.query.claimId)
+    if (claimId) setIndex(claimId) 
     // Force authentication
     if (address) {
+
+      ;
       // Collect number of tokens for address
-      const tokens = getAirdropAmount(address);
+      let tokens = getAirdropAmount(address, index);
+
+
 
       setNumTokens(tokens);
       
       // Collect claimed status for address, if part of airdrop (tokens > 0)
       if (tokens > 0) {
-        const claimed = await getClaimedStatus(address);
+        let claimed = await getClaimedStatus(address);
         setAlreadyClaimed(claimed);
       }
     }
@@ -157,13 +178,14 @@ function useToken() {
   // On load:
   useEffect(() => {
     syncStatus();
-  }, [address]);
+  }, [address, index]);
 
   return {
     dataLoading,
     numTokens,
     alreadyClaimed,
     claimAirdrop,
+    index
   };
 }
 

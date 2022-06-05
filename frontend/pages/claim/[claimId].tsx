@@ -3,9 +3,16 @@ import { useState } from "react"; // State management
 import { token } from "state/token"; // Global state: Tokens
 import Layout from "components/Layout"; // Layout wrapper
 import styles from "styles/pages/Claim.module.scss"; // Page styles
+import { useRouter } from 'next/router';
+import config from "config"; // Airdrop config
+import { ethers } from "ethers"; // Ethers
+
+const bn = ethers.BigNumber;
 
 export default function Claim() {
+  const router = useRouter()
   // Global ETH state
+  let claimId: number = Number(router.query.claimId)
   const { address, unlock }: { address: string | null; unlock: Function } =
     eth.useContainer();
   // Global token state
@@ -21,19 +28,20 @@ export default function Claim() {
     claimAirdrop: Function;
   } = token.useContainer();
   // Local button loading
-  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
   /**
    * Claims airdrop with local button loading
    */
   const claimWithLoading = async () => {
     setButtonLoading(true); // Toggle
-    await claimAirdrop(); // Claim
+    await claimAirdrop(index); // Claim
     setButtonLoading(false); // Toggle
   };
 
   return (
-    <Layout>
+    <Layout key={router.asPath}>
       <div className={styles.claim}>
         {!address ? (
           // Not authenticated
@@ -66,7 +74,7 @@ export default function Claim() {
           // Claim your airdrop
           <div className={styles.card}>
             <h1>Claim your airdrop.</h1>
-            <p>Your address qualifies for {numTokens} tokens.</p>
+            <p>Your address qualifies for {numTokens} {config[claimId].symbol}.</p>
             <button onClick={claimWithLoading} disabled={buttonLoading}>
               {buttonLoading ? "Claiming Airdrop..." : "Claim Airdrop"}
             </button>
