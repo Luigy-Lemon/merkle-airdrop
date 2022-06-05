@@ -55,7 +55,7 @@ function useToken() {
 
   // Local state
   const [dataLoading, setDataLoading] = useState<boolean>(true); // Data retrieval status
-  const [numTokens, setNumTokens] = useState<number>(0); // Number of claimable tokens
+  const [numTokens, setNumTokens] = useState<string>("0"); // Number of claimable tokens
   const [alreadyClaimed, setAlreadyClaimed] = useState<boolean>(false); // Claim status
   const [index, setIndex] = useState<number>(0); // index
 
@@ -83,7 +83,7 @@ function useToken() {
    * @param {string} address to check
    * @returns {string} of tokens claimable
    */
-  const getAirdropAmount = (address: string,index:number ): number => {
+  const getAirdropAmount = (address: string,index:number ): string => {
     // If address is in airdrop. convert address to correct checksum
     address = ethers.utils.getAddress(address)
     if (address in config[index].addresses) {
@@ -96,7 +96,7 @@ function useToken() {
       return config[index].addresses[address];
     }
     // Else, return 0 tokens
-    return 0;
+    return "0";
   };
 
   /**
@@ -165,7 +165,7 @@ function useToken() {
       setNumTokens(tokens);
       
       // Collect claimed status for address, if part of airdrop (tokens > 0)
-      if (tokens > 0) {
+      if (Number(tokens) > 0) {
         let claimed = await getClaimedStatus(address);
         setAlreadyClaimed(claimed);
       }
