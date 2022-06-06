@@ -6,7 +6,29 @@ import styles from "styles/pages/Claim.module.scss"; // Page styles
 import { useRouter } from 'next/router';
 import config from "config"; // Airdrop config
 import { ethers } from "ethers"; // Ethers
+import { getAllClaimIds, getClaimIdData } from '../../lib/claim';
 
+export async function getStaticPaths() {
+    // Return a list of possible value for ClaimId
+    const paths = getAllClaimIds();
+    return {
+    paths,
+    fallback: false,
+  };
+  }
+  
+type Params = {
+    claimId: number,
+    
+  };
+export async function getStaticProps( params:Params) {
+    const tokenData = getClaimIdData(params.claimId);
+    return {
+      props: {
+        tokenData,
+      },
+    };
+  }
 const bn = ethers.BigNumber;
 
 export default function Claim() {
