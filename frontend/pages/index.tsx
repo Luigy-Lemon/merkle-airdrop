@@ -4,7 +4,6 @@ import Layout from "components/Layout"; // Layout wrapper
 import { useRouter } from "next/router"; // Routing
 import styles from "styles/pages/Home.module.scss"; // Page styles
 import config from "config"; // Airdrop config
-import { getAllClaimIds } from '../lib/claim';
 
 // Setup project details
 const tokenName: string = process.env.NEXT_PUBLIC_TOKEN_NAME ?? "Token Name";

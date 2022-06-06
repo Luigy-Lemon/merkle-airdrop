@@ -18,10 +18,12 @@ export async function getStaticPaths() {
   }
   
 type Params = {
-    claimId: number,
+    params:{
+         claimId: string,
+    }
     
   };
-export async function getStaticProps( params:Params) {
+export async function getStaticProps( {params}:Params) {
     const tokenData = getClaimIdData(params.claimId);
     return {
       props: {
