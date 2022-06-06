@@ -31,7 +31,6 @@ export async function getStaticProps( {params}:Params) {
       },
     };
   }
-const bn = ethers.BigNumber;
 
 export default function Claim() {
   const router = useRouter()

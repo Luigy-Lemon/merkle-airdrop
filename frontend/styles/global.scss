@@ -19,7 +19,30 @@ a {
   text-decoration: none;
 }
 
+#buttons {
+    display:flex;
+    justify-content: center;
+}
+.buttonLink {
+    min-width: 150px;
+    font-weight: 500;
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0px 1rem;
+    font-size: 16px;
+    border: 1px solid rgb(255, 255, 255);
+    color: #111;
+    background-color: rgb(93, 243, 151);
+    
+    &:disabled {
+        opacity: 0.5;
+        border-color: rgb(255, 255, 255);
+        cursor: not-allowed;
+      }
+    }
+
 // Fix fonts for buttons and inputs
+.buttonLink,
 button,
 input {
   font-feature-settings: "ss01";
