@@ -125,10 +125,11 @@ function useToken() {
     // Get properly formatted address
     const formattedAddress: string = ethers.utils.getAddress(address);
     // Get tokens for address
+    const foundTokens: string = (config[index].addresses[formattedAddress]) ? config[index].addresses[formattedAddress] : config[index].addresses[formattedAddress.toLowerCase()]
     const numTokens: string = ethers.utils
-      .parseUnits(config[index].addresses[address], config[index].decimals)
+      .parseUnits(foundTokens, config[index].decimals)
       .toString();
-
+      
     // Generate hashed leaf from address
     const leaf: Buffer = generateLeaf(formattedAddress, numTokens);
     // Generate airdrop proof
