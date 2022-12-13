@@ -5,9 +5,6 @@ import MerkleTree from "merkletreejs"; // MerkleTree.js
 import { logger } from "./utils/logger"; // Logging
 import { getAddress, parseUnits, solidityKeccak256 } from "ethers/lib/utils"; // Ethers utils
 
-// Output file path
-const outputPath: string = path.join(__dirname, "../merkle.json");
-
 // Airdrop recipient addresses and scaled token values
 type AirdropRecipient = {
   // Recipient address
@@ -53,6 +50,8 @@ export default class Generator {
   }
 
   async process(symbol:string ): Promise<void> {
+
+    const outputPath: string = path.join(__dirname, `../merkle-${symbol}.json`);
     
     logger.info(`Generating Merkle tree for ${symbol}`);
 

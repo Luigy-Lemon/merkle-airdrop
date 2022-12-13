@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.13+commit.abaa5c0e"
+		"version": "0.8.17+commit.8df45f5f"
 	},
 	"language": "Solidity",
 	"output": {
@@ -221,7 +221,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/src/MerkleClaimERC20.sol": "MerkleClaimERC20"
+			"src/MerkleClaimERC20.sol": "MerkleClaimERC20"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -229,7 +229,7 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": true,
+			"enabled": false,
 			"runs": 200
 		},
 		"remappings": []
@@ -244,19 +244,19 @@
 			]
 		},
 		"@openzeppelin/contracts/utils/cryptography/MerkleProof.sol": {
-			"keccak256": "0xaaa504ac17eb0298dcdf5733ce24021b4914f035b97f4400b92827341d3facb3",
+			"keccak256": "0xd466e8b07f4c6220eac16da5127f3ff142e65f0c15c03c7d38f257b02c8585e1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1aa68fa19422863cc91d23b5896917dbe79175ed47b591148aaeb3e98cb49752",
-				"dweb:/ipfs/QmeY64vTRbGhdXcytRKusfJsAfNF4aqr9e1SGBGdCYvW2j"
+				"bzz-raw://e6b3cab69f655e40117bbdd8e68d7423f26d1b24248fb189c295f08de8940616",
+				"dweb:/ipfs/QmWoyRthsBDMa7gJpH5UCjpa8uNUQfyaGbSgY3uvhBH9F3"
 			]
 		},
-		"contracts/src/MerkleClaimERC20.sol": {
-			"keccak256": "0x4547a8983a59ec3bcb5b13bd4e5ecb30fd9542ad9cbad838eaec423b23b79dad",
+		"src/MerkleClaimERC20.sol": {
+			"keccak256": "0x86dcba2c3ca40faae0bf2394c7cd22520c660de1caa52c932798897232f6193b",
 			"license": "AGPL-3.0-only",
 			"urls": [
-				"bzz-raw://c34922f6b565656caffc62b9b38288b4254ac8dc49014396bb28ec03515673e5",
-				"dweb:/ipfs/QmZG3Hyh2dgjCPLN7JbSHkdSCagVw7MrHaEFRCRTRTN4gv"
+				"bzz-raw://a07129a23da587df3299822940dde3e8a2f098be08bca60889356639efb0a72d",
+				"dweb:/ipfs/QmPwMaC45bJWm844A1q1NDrSLcG1Cz5z7fSqn5fhGyzszt"
 			]
 		}
 	},
