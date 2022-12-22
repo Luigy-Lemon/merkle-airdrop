@@ -12,7 +12,7 @@ type IConfig = {
   const config: IConfigArray = [
     {
       symbol: "agUSDC",
-      decimals: 0,
+      decimals: 6,
       token:"0x291B5957c9CBe9Ca6f0b98281594b4eB495F4ec1",
       addresses: {
         "0x008bae3f51b1920af8fa243e38a9ffc50a4e05a5": "390485",
@@ -184,7 +184,7 @@ type IConfig = {
     }, 
     {
       symbol: "agWETH",
-      decimals: 0,
+      decimals: 18,
       token:"0x44932e3b1E662AdDE2F7bac6D5081C5adab908c6",
       addresses: {
         "0x0027ad3bee42b9b6f33509713b453e3a0d41b0f2": "199703845000000",
@@ -354,7 +354,7 @@ type IConfig = {
     },
     {
       symbol: "agLINK",
-      decimals: 0,
+      decimals: 18,
       token:"0xa286Ce70FB3a6269676c8d99BD9860DE212252Ef",
       addresses: {
         "0x03dbe28293adf4643d2be5f3c8397384b51bc612": "2892375853665000000",
@@ -410,7 +410,7 @@ type IConfig = {
     },
     {
       symbol: "agGNO",
-      decimals: 0,
+      decimals: 18,
       token:"0xA26783eAd6C1f4744685c14079950622674ae8A8",
       addresses: {
         "0x03dbe28293adf4643d2be5f3c8397384b51bc612": "355114401665000000",
@@ -597,7 +597,7 @@ type IConfig = {
     },
     {
       symbol: "agWXDAI",
-      decimals: 0,
+      decimals: 18,
       token:"0xd4e420bBf00b0F409188b338c5D87Df761d6C894",
       addresses: {
         "0x0000000000086013192a2c9a506742a43c916e1e": "20455000000",
@@ -1074,7 +1074,7 @@ type IConfig = {
     },
     {
       symbol: "agWBTC",
-      decimals: 0,
+      decimals: 8,
       token:"0x4863cfaF3392F20531aa72CE19E5783f489817d6",
       addresses: {
         "0x0027ad3bee42b9b6f33509713b453e3a0d41b0f2": "2296",

@@ -62,7 +62,6 @@ export default function Claim() {
     await claimAirdrop(index); // Claim
     setButtonLoading(false); // Toggle
   };
-
   return (
     <Layout key={router.asPath}>
       <div className={styles.claim}>

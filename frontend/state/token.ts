@@ -56,6 +56,7 @@ function useToken() {
   // Local state
   const [dataLoading, setDataLoading] = useState<boolean>(true); // Data retrieval status
   const [numTokens, setNumTokens] = useState<string>("0"); // Number of claimable tokens
+  const [numTokensInWei, setNumTokensInWei] = useState<string>("0"); // Number of claimable tokens
   const [alreadyClaimed, setAlreadyClaimed] = useState<boolean>(false); // Claim status
   const [index, setIndex] = useState<number>(0); // index
 
@@ -106,10 +107,13 @@ function useToken() {
    */
   const getClaimedStatus = async (address: string): Promise<boolean> => {
     // Collect token contract
+    address = ethers.utils.getAddress(address);
     const token: ethers.Contract = getContract();
     // Return claimed status
     let assetToClaim:string = config[index].token
-    return await token.hasClaimed(assetToClaim, address);
+
+    let hasClaimedOut = await token.hasClaimed(assetToClaim, address)
+    return hasClaimedOut;
   };
 
   const claimAirdrop = async (claimId:number): Promise<void> => {
@@ -125,20 +129,17 @@ function useToken() {
     // Get properly formatted address
     const formattedAddress: string = ethers.utils.getAddress(address);
     // Get tokens for address
-    const foundTokens: string = (config[index].addresses[formattedAddress]) ? config[index].addresses[formattedAddress] : config[index].addresses[formattedAddress.toLowerCase()]
-    const numTokens: string = ethers.utils
-      .parseUnits(foundTokens, config[index].decimals)
-      .toString();
+    const numTokensInWei: string = (config[index].addresses[formattedAddress]) ? config[index].addresses[formattedAddress] : config[index].addresses[formattedAddress.toLowerCase()]
       
     // Generate hashed leaf from address
-    const leaf: Buffer = generateLeaf(formattedAddress, numTokens);
+    const leaf: Buffer = generateLeaf(formattedAddress, numTokensInWei);
     // Generate airdrop proof
     const proof: string[] = merkleTree(index).getHexProof(leaf);
 
     // Try to claim airdrop and refresh sync status
     try {
-      console.log(`asset:${assetToClaim}\nuser: ${formattedAddress}\namount: ${numTokens}\nproof: ${proof}`);
-      const tx = await token.claim(assetToClaim, formattedAddress, numTokens, proof);
+      console.log(`asset:${assetToClaim}\nuser: ${formattedAddress}\namount: ${numTokensInWei}\nproof: ${proof}`);
+      const tx = await token.claim(assetToClaim, formattedAddress, numTokensInWei, proof);
       await tx.wait(1);
       await syncStatus();
     } catch (e) {
@@ -156,14 +157,12 @@ function useToken() {
     if (claimId) setIndex(claimId) 
     // Force authentication
     if (address) {
-
-      ;
       // Collect number of tokens for address
-      let tokens = getAirdropAmount(address, index);
-
-
+      let tokensInWei = getAirdropAmount(address, index);
+      let tokens = ethers.FixedNumber.fromValue(ethers.BigNumber.from(tokensInWei) ,config[index].decimals).toString();
 
       setNumTokens(tokens);
+      setNumTokensInWei(tokensInWei);
       
       // Collect claimed status for address, if part of airdrop (tokens > 0)
       if (Number(tokens) > 0) {
