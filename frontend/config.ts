@@ -353,9 +353,9 @@ type IConfig = {
     }
     },
     {
-      symbol: "agLINK",
+      symbol: "LINK",
       decimals: 18,
-      token:"0xa286Ce70FB3a6269676c8d99BD9860DE212252Ef",
+      token:"0xE2e73A1c69ecF83F464EFCE6A5be353a37cA09b2",
       addresses: {
         "0x03dbe28293adf4643d2be5f3c8397384b51bc612": "2892375853665000000",
         "0x0b3ab5a8d926d07275291c074225f258d00b4f08": "18436703175000000",
